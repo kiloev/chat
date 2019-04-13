@@ -1,0 +1,51 @@
+service: chat
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+  region: ap-southeast-1
+  memorySize: 256
+  timeout: 10
+  versionFunctions: false
+  websocketApiRouteSelectionExpression: $request.body.action
+  environment:
+    TABLE_NAME: chat_connections
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+      Resource: '*'
+
+functions:
+  connection:
+    handler: src/handler/connection.handler
+    events:
+      - websocket: $connect
+      - websocket: $disconnect
+      - websocket: $default
+  sendMessage:
+    handler: src/handler/sendMessage.handler
+    events:
+      - websocket: sendMessage
+
+resources:
+  Resources:
+    DynamoDbTable:
+      Type: AWS::DynamoDB::Table
+      DeletionPolicy: Retain
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: connectionId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: connectionId
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        StreamSpecification:
+          StreamViewType: NEW_AND_OLD_IMAGES
+        TableName: ${self:provider.environment.TABLE_NAME}

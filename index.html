@@ -1,0 +1,27 @@
+<html>
+    <head>
+        <title>Chat</title>
+    </head>
+    <body>
+        <script>
+            (() => {
+                var ws = new WebSocket('wss://712lqnmxf8.execute-api.ap-southeast-1.amazonaws.com/dev');
+                ws.onopen = function() {
+                    console.log('Connection is open...');
+                };
+                ws.onmessage = function (e) {
+                    var received_msg = e.data;
+                    console.log('Message is received...', received_msg);
+                };
+                ws.onclose = function() {
+                    console.log('Connection is closed...');
+                };
+
+                setTimeout(() => {
+                    console.log('Sending');
+                    ws.send(JSON.stringify({ action: 'sendMessage', data: 'Test message' }));
+                }, 2000);
+            })();
+        </script>
+    </body>
+</html>
