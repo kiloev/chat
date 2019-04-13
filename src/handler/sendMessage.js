@@ -1,5 +1,4 @@
 const aws = require('aws-sdk');
-require('aws-sdk/clients/apigatewaymanagementapi');
 
 aws.config.update({ region: process.env.AWS_REGION });
 const dynamoDb = new aws.DynamoDB({ apiVersion: '2012-10-08' });
