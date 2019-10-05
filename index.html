@@ -1,27 +1,26 @@
 <html>
-    <head>
-        <title>Chat</title>
-    </head>
-    <body>
-        <script>
-            (() => {
-                var ws = new WebSocket('wss://712lqnmxf8.execute-api.ap-southeast-1.amazonaws.com/dev');
-                ws.onopen = function() {
-                    console.log('Connection is open...');
-                };
-                ws.onmessage = function (e) {
-                    var received_msg = e.data;
-                    console.log('Message is received...', received_msg);
-                };
-                ws.onclose = function() {
-                    console.log('Connection is closed...');
-                };
+<head>
+<title>Chat</title>
+</head>
+<body>
+<script>
+window.c = (() => {
+  const ws = new WebSocket('wss://712lqnmxf8.execute-api.ap-southeast-1.amazonaws.com/dev');
+  ws.onopen = () => {
+    console.info('Status: Connected');
+  };
+  ws.onclose = () => {
+    console.info('Status: Disconnected');
+  };
+  ws.onmessage = (e) => {
+    console.log(`Chat: ${e.data}`);
+  };
 
-                setTimeout(() => {
-                    console.log('Sending');
-                    ws.send(JSON.stringify({ action: 'sendMessage', data: 'Test message' }));
-                }, 2000);
-            })();
-        </script>
-    </body>
+  // Run c('Hello!') in console to send message
+  return (message) => {
+    ws.send(JSON.stringify({ action: 'sendMessage', data: message }));
+  };
+})();
+</script>
+</body>
 </html>
